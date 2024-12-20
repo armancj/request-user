@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UserModel } from './user.model';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -17,6 +18,12 @@ describe('AppController', () => {
   describe('root', () => {
     it('should return "Hello World!"', () => {
       expect(appController.getHello()).toBe('Hello World!');
+    });
+
+    it('should get users', () => {
+      const user: UserModel = { edad: 64, name: 'mandi' };
+
+      expect(appController.findAllUser()).toEqual([user]);
     });
   });
 });
