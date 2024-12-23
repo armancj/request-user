@@ -1,8 +1,8 @@
-import { UserModel } from '../user.model';
+import { UserModel } from '../model/user.model';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
 
-export class CreateUserDto implements UserModel {
+export class CreateUserDto implements Omit<UserModel, 'id'> {
   @ApiProperty()
   @IsNumber()
   @Min(18)
