@@ -8,23 +8,27 @@ import { CreateUserDto } from './dto/create-user.dto';
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
+
   @Get()
   @ApiOkResponse({ type: [User] })
-  findAllUser() {
+  findAll() {
     return this.userService.findAllUser();
   }
 
   @Get('/:id')
-  finOne(@Param('id') id: number) {
+  @ApiOkResponse({ type: User })
+  findOne(@Param('id') id: number) {
     return this.userService.findOne(id);
   }
 
   @Post()
+  @ApiOkResponse({ type: User })
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Delete('/:id')
+  @ApiOkResponse()
   delete(@Param('id') id: number) {
     return this.userService.delete(id);
   }

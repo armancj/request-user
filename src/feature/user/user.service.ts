@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './entity/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserModel } from './model/user.model';
 import * as console from 'console';
 
 
 @Injectable()
 export class UserService {
-  private users: UserModel[] = [];
+  private users: User[] = [{
+    id: 1, edad: 60, name: 'mandi'
+  }];
 
 
   findAllUser(): User[] {
@@ -24,7 +25,7 @@ export class UserService {
   }
 
   findOne(id: number) {
-    const user = this.users[id+1];
+     const user = this.users[id-1]
 
     if (!user) throw new NotFoundException('user not found');
 
@@ -32,16 +33,11 @@ export class UserService {
   }
 
   delete(id: number) {
-    this.findOne(id);
+    const index = this.users.findIndex(user => user.id === id);
 
-    const user = this.users.map(user =>{
-       if(user.id !== id) return user;
-    }
-    )
+    if (index === -1) { throw new NotFoundException(`User with ID ${id} not found`); }
 
-    console.log({user})
-
-    this.users = user;
+    this.users.splice(index, 1);
 
     return { mensage: 'delete successfully' };
   }
