@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { User } from './entity/user.entity';
@@ -20,8 +20,18 @@ export class AppController {
     return this.appService.findAllUser();
   }
 
+  @Get('/user/:id')
+  finOne(@Param('id') id: number) {
+    return this.appService.findOne(id);
+  }
+
   @Post('/user')
   create(@Body() createUserDto: CreateUserDto) {
     return this.appService.create(createUserDto);
+  }
+
+  @Delete('/user/:id')
+  delete(@Param('id') id: number) {
+    return this.appService.delete(id);
   }
 }

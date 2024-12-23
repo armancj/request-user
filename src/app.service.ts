@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './entity/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -16,5 +16,23 @@ export class AppService {
   create(createUserDto: CreateUserDto) {
     this.user.push(createUserDto);
     return createUserDto;
+  }
+
+  findOne(id: number) {
+    const user = this.user[id];
+
+    if (!user) throw new NotFoundException('user not found');
+
+    return user;
+  }
+
+  delete(id: number) {
+    const u = this.findOne(id);
+
+    this.user = this.user.filter(
+      (value) => value.edad !== u.edad && value.name !== u.name,
+    );
+
+    return { mensage: 'delete successfully' };
   }
 }
