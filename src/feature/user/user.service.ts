@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './entity/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import {UpdateUserDto} from "./dto/update-user.dto";
 
 @Injectable()
 export class UserService {
@@ -33,6 +34,19 @@ export class UserService {
     }
 
     return user;
+  }
+
+  update(id: number, updateUserDto: UpdateUserDto): User {
+    const userIndex = this.users.findIndex((user) => user.id === id);
+
+    if (userIndex === -1) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    const updatedUser = { ...this.users[userIndex], ...updateUserDto };
+    this.users[userIndex] = updatedUser;
+
+    return updatedUser;
   }
 
   delete(id: number) {
