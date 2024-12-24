@@ -15,10 +15,10 @@ export class UserController {
     return this.userService.findAllUser();
   }
 
-  @Get('/:id')
+  @Get(':id')
   @ApiOkResponse({ type: User })
   findOne(@Param('id') id: number) {
-    return this.userService.findOne(id);
+    return this.userService.findOne(+id);
   }
 
   @Post()
@@ -27,9 +27,9 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Delete('/:id')
+  @Delete(':id')
   @ApiOkResponse()
   delete(@Param('id') id: number) {
-    return this.userService.delete(id);
+    return this.userService.delete(+id);
   }
 }

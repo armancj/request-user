@@ -36,7 +36,7 @@ export class UserService {
   }
 
   delete(id: number) {
-    const index = this.users.findIndex((user) => user.id === id);
+    const index = this.users.findIndex((user) => user.id === Number(id));
 
     if (index === -1) {
       throw new NotFoundException(`User with ID ${id} not found`);
