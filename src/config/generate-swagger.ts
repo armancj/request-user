@@ -5,7 +5,7 @@ export function generateSwagger(app: INestApplication<any>) {
   const config = new DocumentBuilder()
     .setTitle('Request example')
     .setDescription('The user Request API description')
-    .setVersion('0.5')
+    .setVersion('0.6.1')
     .addTag('user')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
