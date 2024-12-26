@@ -4,7 +4,7 @@ import { BooksModule } from './books.module';
 
  @ApiTags('Books')
 
- @Controller({}) 
+ @Controller('books') 
 export class BooksController {
    @Get('/books')
     getAllBooks(){
