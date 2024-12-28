@@ -6,8 +6,14 @@ export class Book implements BookModel {
   id: number;
 
   @ApiProperty()
-  name: string;
+  title: string;
 
   @ApiProperty()
-  date_post: number;
+  author: string;
+
+  @ApiProperty()
+  year: number;
+  
+   @ApiProperty()
+  genre: string;
 }

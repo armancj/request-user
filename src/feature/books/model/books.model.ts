@@ -1,6 +1,8 @@
 export interface BookModel {
-    id: number;
-    name: string;
-    date_post: number;
+  id: number;
+  title: string;
+  author:string ;
+  year: number;
+  genre: string;
   }
   
