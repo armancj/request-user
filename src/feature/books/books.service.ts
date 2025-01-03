@@ -1,27 +1,35 @@
 import { Injectable } from "@nestjs/common";
+import { BookModel } from "./model/books.model";
+import { CreateBook } from './dto/create-book.dto';
 
  
  @Injectable()
  export class BooksService{
 
-    private books =[
-        {
-        id: 1,
-        title: 'El señor de los anillos',
-        author: 'J.R.R. Tolkien',
-        year: 1954,
-        genre: 'Fantasia'
-     },
-     {
-        id: 2,
-        title: 'La camaraaaaa de la mentira',
-        author: 'George Orwell',
-        year: 1984,
-        genre: 'Drama'
-     }
-    ]
+    private books =[]
 
+     
+    create(createBook:CreateBook ) {
+        const book = {
+          ...CreateBook,
+          id: this.books.length + 1,
+        };
+        this.books.push(book);
+        return book;
+      }
      getBooks(){
-         return this.books;
+        return this.books;
+    }
+     updatebooks(){
+        return "Libros act"
      }
+     deletebooks(){
+        return "Libros eliminados"
+     }
+     updateBooksStatus(){
+    
+        return "Actualizando el estado de los libros"
+
+     }
+     
  }

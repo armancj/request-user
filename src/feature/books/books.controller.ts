@@ -1,6 +1,11 @@
-import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Patch, Post, Put } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { BooksService } from './books.service';
+
+import { Book } from './entity/books.entity';
+import { BookModel } from './model/books.model';
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { CreateBook } from './dto/create-book.dto';
 
 @ApiTags('Books')
 @Controller('books')
@@ -14,15 +19,23 @@ export class BooksController {
   }
 
   @Post()
-  createBook(){
-    return "Creando libros"
+  @ApiOkResponse({type:Book})
+  createBook(@Body()books :CreateBook){
+    
+    return this.booksService.create(books);
+
   }
   @Put()
   updateBook(){
-    return "Actualizando libros"
+    return this.booksService.updatebooks();
   }
+  @Patch()
+  patchBook(){
+    return this.booksService.updateBooksStatus();
+  }
+  
   @Delete()
   deleteBook(){
-    return "Eliminando libros"
+    return this.booksService.deletebooks();
   }
 }
