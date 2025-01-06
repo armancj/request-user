@@ -1,5 +1,5 @@
-import { BookModel } from "../model/books.model";
-import { ApiProperty } from "@nestjs/swagger";
+import { BookModel } from '../model/books.model';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class Book implements BookModel {
   @ApiProperty()
@@ -13,7 +13,10 @@ export class Book implements BookModel {
 
   @ApiProperty()
   year: number;
-  
-   @ApiProperty()
+
+  @ApiProperty()
   genre: string;
+
+  @ApiProperty()
+  editorial: string;
 }

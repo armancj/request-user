@@ -8,7 +8,7 @@ export class BooksService {
   private books: Book[] = [];
 
   create(createBook: CreateBook): Book {
-    const newBook = {
+    const newBook: Book = {
       id: this.books.length + 1,
       ...createBook,
     };
@@ -28,7 +28,8 @@ export class BooksService {
 
   update(id: number, updateBook: UpdateBook): Book {
     const bookIndex = this.books.findIndex((book) => book.id === id);
-    if (bookIndex === -1) throw new NotFoundException(`Book with ID ${id} not found`);
+    if (bookIndex === -1)
+      throw new NotFoundException(`Book with ID ${id} not found`);
 
     const updatedBook = { ...this.books[bookIndex], ...updateBook };
     this.books[bookIndex] = updatedBook;
@@ -37,7 +38,8 @@ export class BooksService {
 
   remove(id: number): void {
     const bookIndex = this.books.findIndex((book) => book.id === id);
-    if (bookIndex === -1) throw new NotFoundException(`Book with ID ${id} not found`);
+    if (bookIndex === -1)
+      throw new NotFoundException(`Book with ID ${id} not found`);
     this.books.splice(bookIndex, 1);
   }
 }
