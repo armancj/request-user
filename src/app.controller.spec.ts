@@ -21,7 +21,7 @@ describe('AppController', () => {
     });
 
     it('should get users', () => {
-      const user: UserModel = { edad: 64, name: 'mandi' };
+      const user: UserModel = { age: 64, name: 'mandi' };
 
       expect(appController.findAllUser()).toEqual([user]);
     });

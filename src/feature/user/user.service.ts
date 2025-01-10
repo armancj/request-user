@@ -2,32 +2,29 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './entity/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityManager, EntityRepository } from '@mikro-orm/core';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [
-    {
-      id: 1,
-      edad: 60,
-      name: 'mandi',
-    },
-  ];
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: EntityRepository<User>,
+    private readonly em: EntityManager,
+  ) {}
 
-  findAllUser(): User[] {
-    return this.users;
+  async findAllUser(): Promise<User[]> {
+    return await this.userRepository.findAll();
   }
 
-  create(createUserDto: CreateUserDto) {
-    const user = {
-      ...createUserDto,
-      id: this.users.length + 1,
-    };
-    this.users.push(user);
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const user = this.userRepository.create(createUserDto);
+    await this.em.flush();
     return user;
   }
 
-  findOne(id: number): User {
-    const user = this.users.find((user) => user.id === id);
+  async findOne(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({ id });
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -36,27 +33,18 @@ export class UserService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto): User {
-    const userIndex = this.users.findIndex((user) => user.id === id);
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    await this.findOne(id);
 
-    if (userIndex === -1) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
+    await this.userRepository.nativeUpdate({ id }, updateUserDto);
 
-    const updatedUser = { ...this.users[userIndex], ...updateUserDto };
-    this.users[userIndex] = updatedUser;
-
-    return updatedUser;
+    return { message: 'Updated successfully' };
   }
 
-  delete(id: number) {
-    const index = this.users.findIndex((user) => user.id === Number(id));
+  async delete(id: number) {
+    await this.findOne(id);
 
-    if (index === -1) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-
-    this.users.splice(index, 1);
+    await this.userRepository.nativeDelete({ id });
 
     return { message: 'Deleted successfully' };
   }

@@ -3,11 +3,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
 
 export class CreateUserDto implements Omit<UserModel, 'id'> {
-  @ApiProperty()
+  @ApiProperty({default: 18})
   @IsNumber()
   @Min(18)
   @Max(70)
-  edad: number;
+  age: number;
 
   @ApiProperty()
   @IsString()

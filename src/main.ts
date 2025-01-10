@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { APP_PORT } from './config/server.const';
 import { generateSwagger } from './config/generate-swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { MikroORM } from '@mikro-orm/core';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,8 @@ async function bootstrap() {
 
   generateSwagger(app);
 
+  await app.get(MikroORM).getSchemaGenerator().ensureDatabase();
+  await app.get(MikroORM).getSchemaGenerator().updateSchema();
   await app.listen(port);
 }
 bootstrap().then(() => console.log('Server executed'));
