@@ -1,34 +1,33 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { LibraryService } from './library.service';
-import { CreateLibraryDto } from './dto/create-library.dto';
-import { UpdateLibraryDto } from './dto/update-library.dto';
+import { Library } from './library.entity';
 
 @Controller('library')
 export class LibraryController {
   constructor(private readonly libraryService: LibraryService) {}
 
   @Get()
-  findAll() {
+  async findAll(): Promise<Library[]> {
     return this.libraryService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<Library | null> {
     return this.libraryService.findOne(Number(id));
   }
 
   @Post()
-  create(@Body() createLibraryDto: CreateLibraryDto) {
-    return this.libraryService.create(createLibraryDto);
+  async create(@Body() libraryData: Partial<Library>): Promise<Library> {
+    return this.libraryService.create(libraryData);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateLibraryDto: UpdateLibraryDto) {
-    return this.libraryService.update(Number(id), updateLibraryDto);
+  async update(@Param('id') id: string, @Body() libraryData: Partial<Library>): Promise<Library | null> {
+    return this.libraryService.update(Number(id), libraryData);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string): Promise<boolean> {
     return this.libraryService.delete(Number(id));
   }
 }

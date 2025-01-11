@@ -12,8 +12,8 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 @Module({
   imports: [
     MikroOrmModule.forRoot({
-      entitiesTs: ['./src/feature/**/*.entity.ts'],
-      dbName: 'my-db-name.sqlite3',
+      entitiesTs: ['./src/feature/library/library.entity.ts'],
+      dbName: 'libraryMikro.sqlite3',
       driver: SqliteDriver,
       autoLoadEntities: true,
       debug: false,

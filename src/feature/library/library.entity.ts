@@ -1,7 +1,16 @@
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+
+@Entity()
 export class Library {
-    id: number;
-    title: string;
-    author: string;
-    publishedYear: number;
-  }
-  
+  @PrimaryKey()
+  id!: number;
+
+  @Property()
+  title!: string;
+
+  @Property()
+  author!: string;
+
+  @Property()
+  publishedYear!: number;
+}
