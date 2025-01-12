@@ -20,7 +20,6 @@ async function bootstrap() {
   generateSwagger(app);
 
   await app.get(MikroORM).getSchemaGenerator().ensureDatabase();
-  await app.get(MikroORM).getSchemaGenerator().updateSchema();
-  await app.listen(port);
+  await app.get(MikroORM).getSchemaGenerator().updateSchema();  await app.listen(port);
 }
 bootstrap().then(() => console.log('Server executed'));
