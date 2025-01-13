@@ -3,7 +3,7 @@ import { CreateBook } from './create-book.dto';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateBook extends PartialType(CreateBook) {
-    @IsOptional()
+  @IsOptional()
   @IsString()
   title?: string;
 

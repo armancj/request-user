@@ -3,10 +3,10 @@ import { INestApplication } from '@nestjs/common';
 
 export function generateSwagger(app: INestApplication<any>) {
   const config = new DocumentBuilder()
-    .setTitle('Request example')
-    .setDescription('The user Request API description')
-    .setVersion('0.6.1')
-    .addTag('user')
+    .setTitle('Library Request example')
+    .setDescription('The Library Request API description')
+    .setVersion('0.7.0')
+    .addTag('Library')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, documentFactory);

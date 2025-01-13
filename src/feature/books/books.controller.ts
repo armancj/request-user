@@ -1,9 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BooksService } from './books.service';
 import { CreateBook } from './dto/create-book.dto';
-import { UpdateBook} from './dto/update-book.dto';
+import { UpdateBook } from './dto/update-book.dto';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Books')
 @Controller('books')
 export class BooksController {
