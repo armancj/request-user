@@ -1,43 +1,44 @@
 import { Injectable } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/core';
 import { Author } from './author.entity';
-import { CreateAuthorDto } from './dto/create-author.dto';
-import { UpdateAuthorDto } from './dto/update-author.dto';
 
 @Injectable()
 export class AuthorsService {
-  private authors: Author[] = [];
-  private idCounter = 1;
+  constructor(private readonly em: EntityManager) {}
 
-  findAll(): Author[] {
-    return this.authors;
-  }
+  async createAuthor(name: string, bio: string): Promise<Author> {
+    const author = new Author();
+    author.name = name;
+    author.bio = bio;
 
-  findOne(id: number): Author {
-    return this.authors.find(author => author.id === id);
-  }
-
-  create(createAuthorDto: CreateAuthorDto): Author {
-    const newAuthor: Author = {
-      id: this.idCounter++,
-      ...createAuthorDto,
-    };
-    this.authors.push(newAuthor);
-    return newAuthor;
-  }
-
-  update(id: number, updateAuthorDto: UpdateAuthorDto): Author {
-    const author = this.findOne(id);
-    if (!author) return null;
-
-    Object.assign(author, updateAuthorDto);
+    await this.em.persistAndFlush(author); // Guarda el autor en la DB
     return author;
   }
 
-  delete(id: number): boolean {
-    const index = this.authors.findIndex(author => author.id === id);
-    if (index === -1) return false;
+  async getAllAuthors(): Promise<Author[]> {
+    return await this.em.find(Author, {}); // Devuelve todos los autores
+  }
 
-    this.authors.splice(index, 1);
+  async getAuthorById(id: number): Promise<Author | null> {
+    return await this.em.findOne(Author, { id });
+  }
+
+  async updateAuthor(id: number, name: string, bio: string): Promise<Author | null> {
+    const author = await this.em.findOne(Author, { id });
+    if (!author) return null;
+
+    author.name = name;
+    author.bio = bio;
+
+    await this.em.persistAndFlush(author); // Actualiza los datos
+    return author;
+  }
+
+  async deleteAuthor(id: number): Promise<boolean> {
+    const author = await this.em.findOne(Author, { id });
+    if (!author) return false;
+
+    await this.em.removeAndFlush(author); // Elimina el autor
     return true;
   }
 }

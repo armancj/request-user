@@ -1,34 +1,55 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  Body,
+  Patch,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { LibraryService } from './library.service';
+import { Library } from './entity/library.entity';
 import { CreateLibraryDto } from './dto/create-library.dto';
 import { UpdateLibraryDto } from './dto/update-library.dto';
+import { ApiNotFoundResponse } from '@nestjs/swagger';
+import { NotFoundLibraryExceptionDto } from './dto/not-found-library-exception.dto';
 
 @Controller('library')
 export class LibraryController {
   constructor(private readonly libraryService: LibraryService) {}
 
   @Get()
-  findAll() {
+  async findAll(): Promise<Library[]> {
     return this.libraryService.findAll();
   }
 
+  @ApiNotFoundResponse({
+    description: 'library not found',
+    type: NotFoundLibraryExceptionDto,
+  })
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<Library | null> {
     return this.libraryService.findOne(Number(id));
   }
 
   @Post()
-  create(@Body() createLibraryDto: CreateLibraryDto) {
-    return this.libraryService.create(createLibraryDto);
+  async create(@Body() libraryData: CreateLibraryDto): Promise<Library> {
+    return this.libraryService.create(libraryData);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateLibraryDto: UpdateLibraryDto) {
-    return this.libraryService.update(Number(id), updateLibraryDto);
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() libraryData: UpdateLibraryDto,
+  ): Promise<Library | null> {
+    return this.libraryService.update(Number(id), libraryData);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.libraryService.delete(Number(id));
+  async delete(@Param('id') id: string): Promise<void> {
+    await this.libraryService.delete(Number(id));
   }
 }
