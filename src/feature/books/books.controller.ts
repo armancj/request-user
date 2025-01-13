@@ -1,56 +1,48 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
   Param,
   Patch,
   Post,
-  Put,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { BooksService } from './books.service';
-import { Book } from './entity/books.entity';
 import { CreateBook } from './dto/create-book.dto';
 import { UpdateBook } from './dto/update-book.dto';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Books')
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
+  @Post()
+  async create(@Body() createBookDto: CreateBook) {
+    return await this.booksService.create(createBookDto);
+  }
+
   @Get()
-  @ApiOkResponse({ type: [Book] })
-  getBooks() {
-    return this.booksService.findAll();
+  async findAll() {
+    return await this.booksService.findAll();
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: Book })
-  getBook(@Param('id') id: number) {
-    return this.booksService.findOne(+id);
-  }
-
-  @Post()
-  @ApiOkResponse({ type: Book })
-  createBook(@Body() createBook: CreateBook) {
-    return this.booksService.create(createBook);
-  }
-
-  @Put(':id')
-  @ApiOkResponse({ type: Book })
-  updateBook(@Param('id') id: number, @Body() updateBook: UpdateBook) {
-    return this.booksService.update(+id, updateBook);
+  async findOne(@Param('id') id: number) {
+    return await this.booksService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiOkResponse({ type: Book })
-  partialUpdateBook(@Param('id') id: number, @Body() updateBook: UpdateBook) {
-    return this.booksService.update(+id, updateBook);
+  async update(@Param('id') id: number, @Body() updateBookDto: UpdateBook) {
+    return await this.booksService.update(id, updateBookDto);
   }
 
   @Delete(':id')
-  deleteBook(@Param('id') id: number) {
-    this.booksService.remove(+id);
+  async remove(@Param('id') id: number) {
+    await this.booksService.remove(id);
+    return { message: 'Book deleted successfully' };
   }
 }

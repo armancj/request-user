@@ -13,9 +13,10 @@ import { LibraryService } from './library.service';
 import { Library } from './entity/library.entity';
 import { CreateLibraryDto } from './dto/create-library.dto';
 import { UpdateLibraryDto } from './dto/update-library.dto';
-import { ApiNotFoundResponse } from '@nestjs/swagger';
+import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
 import { NotFoundLibraryExceptionDto } from './dto/not-found-library-exception.dto';
 
+@ApiTags('Libraries')
 @Controller('library')
 export class LibraryController {
   constructor(private readonly libraryService: LibraryService) {}

@@ -1,22 +1,39 @@
+import {
+  Entity,
+  PrimaryKey,
+  Property,
+  BeforeCreate,
+  BeforeDelete,
+  BeforeUpdate,
+} from '@mikro-orm/core';
 import { BookModel } from '../model/books.model';
-import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
+@Entity()
 export class Book implements BookModel {
-  @ApiProperty()
-  id: number;
+  @PrimaryKey({ autoincrement: true })
+  id!: number;
 
-  @ApiProperty()
+  @Property({ type: 'string' })
   title: string;
 
-  @ApiProperty()
+  @Property()
   author: string;
 
-  @ApiProperty()
+  @Property()
   year: number;
 
-  @ApiProperty()
+  @Property()
+  @Exclude()
   genre: string;
 
-  @ApiProperty()
+  @Property()
   editorial: string;
+
+  @BeforeCreate()
+  @BeforeDelete()
+  @BeforeUpdate()
+  getNowYear() {
+    this.year = new Date().getFullYear();
+  }
 }

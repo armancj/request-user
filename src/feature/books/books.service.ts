@@ -1,45 +1,46 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { Book } from './entity/books.entity';
 import { CreateBook } from './dto/create-book.dto';
 import { UpdateBook } from './dto/update-book.dto';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { BookNotFoundException } from './exception/book-not-found.exception';
 
 @Injectable()
 export class BooksService {
-  private books: Book[] = [];
+  constructor(
+    @InjectRepository(Book)
+    private readonly bookEntityRepository: EntityRepository<Book>,
+    private readonly em: EntityManager,
+  ) {}
 
-  create(createBook: CreateBook): Book {
-    const newBook: Book = {
-      id: this.books.length + 1,
-      ...createBook,
-    };
-    this.books.push(newBook);
-    return newBook;
-  }
-
-  findAll(): Book[] {
-    return this.books;
-  }
-
-  findOne(id: number): Book {
-    const book = this.books.find((book) => book.id === id);
-    if (!book) throw new NotFoundException(`Book with ID ${id} not found`);
+  async create(createBookDto: CreateBook): Promise<Book> {
+    const book = this.bookEntityRepository.create(createBookDto);
+    await this.em.flush();
     return book;
   }
 
-  update(id: number, updateBook: UpdateBook): Book {
-    const bookIndex = this.books.findIndex((book) => book.id === id);
-    if (bookIndex === -1)
-      throw new NotFoundException(`Book with ID ${id} not found`);
-
-    const updatedBook = { ...this.books[bookIndex], ...updateBook };
-    this.books[bookIndex] = updatedBook;
-    return updatedBook;
+  async findAll(): Promise<Book[]> {
+    return this.bookEntityRepository.findAll();
   }
 
-  remove(id: number): void {
-    const bookIndex = this.books.findIndex((book) => book.id === id);
-    if (bookIndex === -1)
-      throw new NotFoundException(`Book with ID ${id} not found`);
-    this.books.splice(bookIndex, 1);
+  async findOne(id: number): Promise<Book> {
+    const bookFound = await this.bookEntityRepository.findOne({ id });
+    if (!bookFound) throw new BookNotFoundException();
+    return bookFound;
+  }
+
+  async update(id: number, updateBookDto: UpdateBook): Promise<boolean> {
+    const bookUpdateCount = await this.bookEntityRepository.nativeUpdate(
+      { id },
+      updateBookDto,
+    );
+    if (bookUpdateCount === 0) throw new BookNotFoundException();
+    return true;
+  }
+
+  async remove(id: number): Promise<void> {
+    const book = await this.findOne(id);
+    await this.em.removeAndFlush(book);
   }
 }
