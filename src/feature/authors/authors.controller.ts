@@ -1,35 +1,36 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { AuthorsService } from './authors.service';
-import { CreateAuthorDto } from './dto/create-author.dto';
-import { UpdateAuthorDto } from './dto/update-author.dto';
-
+import { Author } from './author.entity';
 
 @Controller('authors')
 export class AuthorsController {
   constructor(private readonly authorsService: AuthorsService) {}
 
+  @Post()
+  async create(@Body() body: { name: string; bio: string }): Promise<Author> {
+    return await this.authorsService.createAuthor(body.name, body.bio);
+  }
+
   @Get()
-  findAll() {
-    return this.authorsService.findAll();
+  async findAll(): Promise<Author[]> {
+    return await this.authorsService.getAllAuthors();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authorsService.findOne(Number(id));
-  }
-
-  @Post()
-  create(@Body() createAuthorDto: CreateAuthorDto) {
-    return this.authorsService.create(createAuthorDto);
+  async findOne(@Param('id') id: number): Promise<Author | null> {
+    return await this.authorsService.getAuthorById(id);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateAuthorDto: UpdateAuthorDto) {
-    return this.authorsService.update(Number(id), updateAuthorDto);
+  async update(
+    @Param('id') id: number,
+    @Body() body: { name: string; bio: string },
+  ): Promise<Author | null> {
+    return await this.authorsService.updateAuthor(id, body.name, body.bio);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.authorsService.delete(Number(id));
+  async delete(@Param('id') id: number): Promise<boolean> {
+    return await this.authorsService.deleteAuthor(id);
   }
 }
