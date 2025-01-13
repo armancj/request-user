@@ -1,10 +1,10 @@
 import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
+import { SqliteDriver } from '@mikro-orm/sqlite';
 
 const config: MikroOrmModuleOptions = {
-  entities: ['./src/feature/library/library.entity.ts'],
-  entitiesTs: ['./src/feature/library/library.entity.ts'], 
-  dbName: 'libraryMikro',
-  driver: require('@mikro-orm/sqlite').SqliteDriver, 
+  entities: ['./src/feature/**/*.entity.ts'],
+  dbName: 'library',
+  driver: SqliteDriver,
   debug: true,
 };
 
