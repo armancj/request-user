@@ -1,47 +1,51 @@
 import { Injectable } from '@nestjs/common';
-import { Library } from './library.entity';
-import { CreateLibraryDto } from './dto/create-library.dto';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository, EntityManager } from '@mikro-orm/core';
+import { Library } from './entity/library.entity';
 import { UpdateLibraryDto } from './dto/update-library.dto';
+import { CreateLibraryDto } from './dto/create-library.dto';
+import { NotFoundLibraryExceptionDto } from './dto/not-found-library-exception.dto';
 
 @Injectable()
 export class LibraryService {
-  private libraries: Library[] = [];
-  private idCounter = 1;
+  constructor(
+    @InjectRepository(Library)
+    private readonly libraryRepository: EntityRepository<Library>,
+    private readonly em: EntityManager,
+  ) {}
 
-  findAll(): Library[] {
-    return this.libraries;
+  async findAll(): Promise<Library[]> {
+    return this.libraryRepository.findAll();
   }
 
-  findOne(id: number): Library {
-    const library = this.libraries.find(library => library.id === id);
-    if (!library) {
-      throw new Error(`Library with ID ${id} not found`);
-    }
+  async findOne(id: number): Promise<Library | null> {
+    const library = await this.libraryRepository.findOne({ id });
+    if (!library) throw new NotFoundLibraryExceptionDto();
     return library;
   }
 
-  create(createLibraryDto: CreateLibraryDto): Library {
-    const newLibrary: Library = {
-      id: this.idCounter++,
-      ...createLibraryDto,
-    };
-    this.libraries.push(newLibrary);
-    return newLibrary;
-  }
-
-  update(id: number, updateLibraryDto: UpdateLibraryDto): Library {
-    const library = this.findOne(id);
-    if (!library) return null;
-
-    Object.assign(library, updateLibraryDto);
+  async create(libraryData: CreateLibraryDto): Promise<Library> {
+    const library = this.libraryRepository.create(libraryData);
+    await this.em.persistAndFlush(library);
     return library;
   }
 
-  delete(id: number): boolean {
-    const index = this.libraries.findIndex(library => library.id === id);
-    if (index === -1) return false;
+  async update(
+    id: number,
+    libraryData: UpdateLibraryDto,
+  ): Promise<Library | null> {
+    const library = await this.findOne(id);
 
-    this.libraries.splice(index, 1);
+    const newLibrary: Library = libraryData as Library;
+
+    this.libraryRepository.assign(library, newLibrary);
+    await this.em.flush();
+    return library;
+  }
+
+  async delete(id: number): Promise<boolean> {
+    const library = await this.findOne(id);
+    await this.em.removeAndFlush(library);
     return true;
   }
 }
