@@ -1,12 +1,23 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+import { Book } from '../books/entity/books.entity';
 
-@Entity() //Marca la clase como una entidad de la base de datos. Esto significa que MikroORM la usará para crear y gestionar una tabla.
+@Entity()
 export class Author {
   @PrimaryKey()
-  id!: number; 
+  id!: number;
+
+  @Property({ nullable: true })
+  bio?: string;
 
   @Property()
-  name!: string; 
-  @Property()
-  bio!: string; 
+  userId: number;
+
+  @OneToMany(() => Book, (book: Book) => book.id, { orphanRemoval: true })
+  books = Collection<Book>;
 }

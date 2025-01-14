@@ -8,5 +8,6 @@ import { Book } from './entity/books.entity';
   imports: [MikroOrmModule.forFeature([Book])],
   controllers: [BooksController],
   providers: [BooksService],
+  exports: [BooksService],
 })
 export class BooksModule {}
