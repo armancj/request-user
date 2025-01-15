@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { Author } from './author.entity';
+import { Author } from './entity/author.entity';
 import { AuthorsService } from './authors.service';
 import { AuthorsController } from './authors.controller';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Author])], // Importa la entidad
-  controllers: [AuthorsController], // Controlador para rutas
-  providers: [AuthorsService], // Servicio para la lógica de negocio
+  imports: [MikroOrmModule.forFeature([Author]), UserModule],
+  controllers: [AuthorsController],
+  providers: [AuthorsService],
+  exports: [AuthorsService],
 })
 export class AuthorsModule {}

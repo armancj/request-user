@@ -1,16 +1,21 @@
-import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class CreateAuthorDto {
   @IsNotEmpty()
   @IsString()
-  name: string;
+  @IsOptional()
+  bio?: string;
 
-  @IsNotEmpty()
-  @IsString()
-  book: string;
-
-  @IsNotEmpty()
   @IsNumber()
-  @Min(0)
-  age: number;
+  @IsNotEmpty()
+  @Min(1)
+  @IsInt()
+  userId: number = 1;
 }

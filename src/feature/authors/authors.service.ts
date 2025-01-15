@@ -1,44 +1,69 @@
-import { Injectable } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/core';
-import { Author } from './author.entity';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import { Author } from './entity/author.entity';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { CreateAuthorDto } from './dto/create-author.dto';
+import { UpdateAuthorDto } from './dto/update-author.dto';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthorsService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(
+    @InjectRepository(Author)
+    private readonly authorRepository: EntityRepository<Author>,
+    private readonly em: EntityManager,
+    private readonly userService: UserService,
+  ) {}
 
-  async createAuthor(name: string, bio: string): Promise<Author> {
-    const author = new Author();
-    author.name = name;
-    author.bio = bio;
+  async createAuthor(createAuthorDto: CreateAuthorDto): Promise<Author> {
+    const { userId, ...authorDto } = createAuthorDto;
 
-    await this.em.persistAndFlush(author); // Guarda el autor en la DB
+    const user = await this.findUser(userId);
+    const author = this.authorRepository.create({ ...authorDto, user });
+
+    await this.em.persistAndFlush(author);
     return author;
   }
 
   async getAllAuthors(): Promise<Author[]> {
-    return await this.em.find(Author, {}); // Devuelve todos los autores
+    return await this.authorRepository.findAll();
   }
 
-  async getAuthorById(id: number): Promise<Author | null> {
-    return await this.em.findOne(Author, { id });
-  }
+  async getAuthorById(id: number): Promise<Author> {
+    const author = await this.authorRepository.findOne(
+      { id },
+      { populate: ['user', 'books'] },
+    );
 
-  async updateAuthor(id: number, name: string, bio: string): Promise<Author | null> {
-    const author = await this.em.findOne(Author, { id });
-    if (!author) return null;
+    if (!author)
+      throw new HttpException('author is not found', HttpStatus.NOT_FOUND);
 
-    author.name = name;
-    author.bio = bio;
-
-    await this.em.persistAndFlush(author); // Actualiza los datos
     return author;
   }
 
-  async deleteAuthor(id: number): Promise<boolean> {
-    const author = await this.em.findOne(Author, { id });
-    if (!author) return false;
+  async updateAuthor(
+    id: number,
+    updateAuthorDto: UpdateAuthorDto,
+  ): Promise<{ message: string }> {
+    await this.getAuthorById(id);
 
-    await this.em.removeAndFlush(author); // Elimina el autor
-    return true;
+    const { userId, ...authorDto } = updateAuthorDto;
+    const author: Partial<Author> = { ...authorDto };
+
+    if (userId) author.user = await this.findUser(userId);
+
+    await this.authorRepository.nativeUpdate({ id }, author);
+
+    return { message: 'the author is modify' };
+  }
+
+  async deleteAuthor(id: number): Promise<{ message: string }> {
+    await this.getAuthorById(id);
+    await this.authorRepository.nativeDelete({ id });
+    return { message: 'the author is delete' };
+  }
+
+  private async findUser(userId: number) {
+    return this.userService.findOne(userId);
   }
 }
