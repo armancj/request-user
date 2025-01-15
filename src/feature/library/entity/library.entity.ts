@@ -1,4 +1,5 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Book } from 'src/feature/books/entity/books.entity';
 
 @Entity()
 export class Library {
@@ -13,4 +14,8 @@ export class Library {
 
   @Property()
   publishedYear!: number;
+
+  @ManyToMany(() => Book, (book: Book) => book.libraries, { nullable: true })
+  books: Collection<Book> = new Collection<Book>(this);
+  
 }

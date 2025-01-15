@@ -21,9 +21,4 @@ export class Author {
   @OneToOne(() => User, { owner: true })
   user!: User;
 
-  @OneToMany(() => Book, (book: Book) => book.author, {
-    cascade: [Cascade.REMOVE],
-    orphanRemoval: true,
-  })
-  books = new Collection<Book>(this);
 }

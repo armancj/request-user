@@ -32,7 +32,7 @@ export class AuthorsService {
   async getAuthorById(id: number): Promise<Author> {
     const author = await this.authorRepository.findOne(
       { id },
-      { populate: ['user', 'books'] },
+      { populate: ['user'] },
     );
 
     if (!author)

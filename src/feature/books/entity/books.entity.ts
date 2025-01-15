@@ -6,10 +6,13 @@ import {
   BeforeDelete,
   BeforeUpdate,
   ManyToOne,
+  ManyToMany,
+  Collection,
 } from '@mikro-orm/core';
 import { BookModel } from '../model/books.model';
 import { Exclude } from 'class-transformer';
 import { Author } from '../../authors/entity/author.entity';
+import { Library } from 'src/feature/library/entity/library.entity';
 
 @Entity()
 export class Book implements BookModel {
@@ -21,6 +24,9 @@ export class Book implements BookModel {
 
   @ManyToOne(() => Author)
   author: Author;
+  
+  @ManyToMany(() => Library, null, { nullable: true })
+  libraries: Collection<Library> = new Collection<Library>(this);  
 
   @Property()
   year: number;
@@ -31,6 +37,7 @@ export class Book implements BookModel {
 
   @Property()
   editorial: string;
+  
 
   @BeforeCreate()
   @BeforeDelete()

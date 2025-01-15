@@ -35,7 +35,7 @@ export class BooksService {
   }
 
   async findAll(): Promise<Book[]> {
-    return this.bookEntityRepository.findAll();
+    return this.bookEntityRepository.findAll({where: {$in: [] }});
   }
 
   async findOne(id: number): Promise<Book> {

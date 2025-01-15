@@ -24,6 +24,10 @@ export class LibraryService {
     return library;
   }
 
+  async findBooks(libraryId: number) {
+    return (await this.findOne(libraryId)).id;
+   }
+
   async create(libraryData: CreateLibraryDto): Promise<Library> {
     const library = this.libraryRepository.create(libraryData);
     await this.em.persistAndFlush(library);
