@@ -5,9 +5,11 @@ import {
   BeforeCreate,
   BeforeDelete,
   BeforeUpdate,
+  ManyToOne,
 } from '@mikro-orm/core';
 import { BookModel } from '../model/books.model';
 import { Exclude } from 'class-transformer';
+import { Author } from '../../authors/author.entity';
 
 @Entity()
 export class Book implements BookModel {
@@ -17,8 +19,8 @@ export class Book implements BookModel {
   @Property({ type: 'string' })
   title: string;
 
-  @Property()
-  author: string;
+  @ManyToOne(() => Author)
+  author: Author;
 
   @Property()
   year: number;
