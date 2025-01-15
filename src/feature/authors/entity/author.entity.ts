@@ -1,4 +1,5 @@
 import {
+  Cascade,
   Collection,
   Entity,
   OneToMany,
@@ -6,8 +7,8 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { Book } from '../books/entity/books.entity';
-import { User } from '../user/entity/user.entity';
+import { Book } from '../../books/entity/books.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Entity()
 export class Author {
@@ -20,6 +21,9 @@ export class Author {
   @OneToOne(() => User, { owner: true })
   user!: User;
 
-  @OneToMany(() => Book, (book: Book) => book.author, { orphanRemoval: true })
-  books = Collection<Book>;
+  @OneToMany(() => Book, (book: Book) => book.author, {
+    cascade: [Cascade.REMOVE],
+    orphanRemoval: true,
+  })
+  books = new Collection<Book>(this);
 }

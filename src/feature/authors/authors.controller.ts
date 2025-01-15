@@ -8,7 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { AuthorsService } from './authors.service';
-import { Author } from './author.entity';
+import { Author } from './entity/author.entity';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
 

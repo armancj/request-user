@@ -1,5 +1,4 @@
 import {
-  IsArray,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -19,11 +18,4 @@ export class CreateAuthorDto {
   @Min(1)
   @IsInt()
   userId: number = 1;
-
-  @IsNumber({}, { each: true })
-  @IsArray()
-  @IsNotEmpty({ each: true })
-  @Min(1, { each: true })
-  @IsInt({ each: true })
-  bookIds: number[];
 }

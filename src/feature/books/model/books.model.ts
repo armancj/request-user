@@ -1,4 +1,4 @@
-import { Author } from '../../authors/author.entity';
+import { Author } from '../../authors/entity/author.entity';
 
 export interface BookModel {
   id: number;

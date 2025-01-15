@@ -22,27 +22,26 @@ export class BooksController {
 
   @Post()
   async create(@Body() createBookDto: CreateBook) {
-    return await this.booksService.create(createBookDto);
+    return this.booksService.create(createBookDto);
   }
 
   @Get()
   async findAll() {
-    return await this.booksService.findAll();
+    return this.booksService.findAll();
   }
 
   @Get(':id')
   async findOne(@Param('id') id: number) {
-    return await this.booksService.findOne(id);
+    return this.booksService.findOne(id);
   }
 
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateBookDto: UpdateBook) {
-    return await this.booksService.update(id, updateBookDto);
+    return this.booksService.update(id, updateBookDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: number) {
-    await this.booksService.remove(id);
-    return { message: 'Book deleted successfully' };
+    return this.booksService.remove(id);
   }
 }

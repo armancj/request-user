@@ -1,15 +1,9 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
-import { Author } from './author.entity';
+import { Author } from './entity/author.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
-import { BooksService } from '../books/books.service';
 import { UserService } from '../user/user.service';
 
 @Injectable()
@@ -18,17 +12,14 @@ export class AuthorsService {
     @InjectRepository(Author)
     private readonly authorRepository: EntityRepository<Author>,
     private readonly em: EntityManager,
-    private readonly booksService: BooksService,
     private readonly userService: UserService,
   ) {}
 
   async createAuthor(createAuthorDto: CreateAuthorDto): Promise<Author> {
-    const { userId, bookIds } = createAuthorDto;
+    const { userId, ...authorDto } = createAuthorDto;
 
-    if (!bookIds.length) throw new BadRequestException('user is not author');
-
-    await this.userService.findOne(userId);
-    const author = this.authorRepository.create(createAuthorDto);
+    const user = await this.findUser(userId);
+    const author = this.authorRepository.create({ ...authorDto, user });
 
     await this.em.persistAndFlush(author);
     return author;
@@ -38,27 +29,41 @@ export class AuthorsService {
     return await this.authorRepository.findAll();
   }
 
-  async getAuthorById(id: number): Promise<Author | null> {
-    return await this.authorRepository.findOne({ id });
+  async getAuthorById(id: number): Promise<Author> {
+    const author = await this.authorRepository.findOne(
+      { id },
+      { populate: ['user', 'books'] },
+    );
+
+    if (!author)
+      throw new HttpException('author is not found', HttpStatus.NOT_FOUND);
+
+    return author;
   }
 
   async updateAuthor(
     id: number,
     updateAuthorDto: UpdateAuthorDto,
   ): Promise<{ message: string }> {
-    const author = await this.authorRepository.nativeUpdate(
-      { id },
-      updateAuthorDto,
-    );
-    if (author === 0)
-      throw new HttpException('author is not found', HttpStatus.NOT_FOUND);
+    await this.getAuthorById(id);
+
+    const { userId, ...authorDto } = updateAuthorDto;
+    const author: Partial<Author> = { ...authorDto };
+
+    if (userId) author.user = await this.findUser(userId);
+
+    await this.authorRepository.nativeUpdate({ id }, author);
+
     return { message: 'the author is modify' };
   }
 
   async deleteAuthor(id: number): Promise<{ message: string }> {
-    const author = await this.authorRepository.nativeDelete({ id });
-    if (author === 0)
-      throw new HttpException('author is not found', HttpStatus.NOT_FOUND);
+    await this.getAuthorById(id);
+    await this.authorRepository.nativeDelete({ id });
     return { message: 'the author is delete' };
+  }
+
+  private async findUser(userId: number) {
+    return this.userService.findOne(userId);
   }
 }

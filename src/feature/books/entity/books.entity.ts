@@ -9,7 +9,7 @@ import {
 } from '@mikro-orm/core';
 import { BookModel } from '../model/books.model';
 import { Exclude } from 'class-transformer';
-import { Author } from '../../authors/author.entity';
+import { Author } from '../../authors/entity/author.entity';
 
 @Entity()
 export class Book implements BookModel {
