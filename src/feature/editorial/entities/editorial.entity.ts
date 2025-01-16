@@ -1,5 +1,5 @@
 import { Entity, PrimaryKey, Property, ManyToMany, Collection } from '@mikro-orm/core';
-import { Library } from '../../library/entity/library.entity';
+import { Book } from '../../books/entity/books.entity';
 
 @Entity()
 export class Editorial {
@@ -9,6 +9,6 @@ export class Editorial {
   @Property()
   name!: string;
 
-  @ManyToMany(() => Library, library => library.id)
-  libraries = new Collection<Library>(this);
+  @ManyToMany(() => Book, book => book.editorial, { nullable: true })
+  books = new Collection<Book>(this);
 }

@@ -13,6 +13,7 @@ import { BookModel } from '../model/books.model';
 import { Exclude } from 'class-transformer';
 import { Author } from '../../authors/entity/author.entity';
 import { Library } from 'src/feature/library/entity/library.entity';
+import { Editorial } from 'src/feature/editorial/entities/editorial.entity';
 
 @Entity()
 export class Book implements BookModel {
@@ -29,6 +30,10 @@ export class Book implements BookModel {
   @Exclude()
   libraries: Collection<Library> = new Collection<Library>(this);
 
+  @ManyToMany(() => Editorial, null, { nullable: true })
+  @Exclude()
+  editorials: Collection<Editorial> = new Collection<Editorial>(this);
+  
   @Property()
   year: number;
 
