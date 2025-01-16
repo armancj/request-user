@@ -17,5 +17,6 @@ export class Library {
 
   @ManyToMany(() => Book, (book: Book) => book.libraries, { nullable: true })
   books: Collection<Book> = new Collection<Book>(this);
+
   
 }

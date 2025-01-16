@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import { EntityManager, EntityRepository, FindOptions } from '@mikro-orm/core';
 import { Book } from './entity/books.entity';
 import { CreateBook } from './dto/create-book.dto';
 import { UpdateBook } from './dto/update-book.dto';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { BookNotFoundException } from './exception/book-not-found.exception';
 import { AuthorsService } from '../authors/authors.service';
+import { Library } from '../library/entity/library.entity';
 
 @Injectable()
 export class BooksService {
@@ -26,7 +27,7 @@ export class BooksService {
       author,
     });
 
-    await this.em.flush();
+    await this.em.persistAndFlush(book);
     return book;
   }
 
@@ -35,11 +36,11 @@ export class BooksService {
   }
 
   async findAll(): Promise<Book[]> {
-    return this.bookEntityRepository.findAll({where: {$in: [] }});
+    return this.bookEntityRepository.findAll({ populate: ['libraries'] });
   }
 
   async findOne(id: number): Promise<Book> {
-    const bookFound = await this.bookEntityRepository.findOne({ id });
+    const bookFound = await this.bookEntityRepository.findOne({ id }, { populate: ['libraries'] });
     if (!bookFound) throw new BookNotFoundException();
     return bookFound;
   }
