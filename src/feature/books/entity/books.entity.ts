@@ -5,9 +5,15 @@ import {
   BeforeCreate,
   BeforeDelete,
   BeforeUpdate,
+  ManyToOne,
+  ManyToMany,
+  Collection,
 } from '@mikro-orm/core';
 import { BookModel } from '../model/books.model';
 import { Exclude } from 'class-transformer';
+import { Author } from '../../authors/author.entity';
+import { Library } from 'src/feature/library/entity/library.entity';
+import { Editorial } from 'src/feature/editorial/entities/editorial.entity';
 
 @Entity()
 export class Book implements BookModel {
@@ -17,8 +23,16 @@ export class Book implements BookModel {
   @Property({ type: 'string' })
   title: string;
 
-  @Property()
-  author: string;
+  @ManyToOne(() => Author)
+  author: Author;
+
+  @ManyToMany(() => Library, null, { nullable: true })
+  @Exclude()
+  libraries: Collection<Library> = new Collection<Library>(this);
+
+  @ManyToMany(() => Editorial, null, { nullable: true })
+  @Exclude()
+  editorials: Collection<Editorial> = new Collection<Editorial>(this);
 
   @Property()
   year: number;
@@ -29,6 +43,12 @@ export class Book implements BookModel {
 
   @Property()
   editorial: string;
+
+  @Property({ nullable: true })
+  coverImage?: string;
+
+  @Property({ nullable: true })
+  backCoverImage?: string;
 
   @BeforeCreate()
   @BeforeDelete()

@@ -5,6 +5,7 @@ import { CreateBook } from './dto/create-book.dto';
 import { UpdateBook } from './dto/update-book.dto';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { BookNotFoundException } from './exception/book-not-found.exception';
+import { AuthorsService } from '../authors/authors.service';
 
 @Injectable()
 export class BooksService {
@@ -12,35 +13,60 @@ export class BooksService {
     @InjectRepository(Book)
     private readonly bookEntityRepository: EntityRepository<Book>,
     private readonly em: EntityManager,
-  ) {}
+    private readonly authorsService: AuthorsService,
+  ) { }
 
   async create(createBookDto: CreateBook): Promise<Book> {
-    const book = this.bookEntityRepository.create(createBookDto);
-    await this.em.flush();
+    const { authorId, ...bookDto } = createBookDto;
+    const author = await this.findAuthor(authorId);
+    const book = this.bookEntityRepository.create({
+      ...bookDto,
+      author,
+    });
+    await this.em.persistAndFlush(book);
     return book;
   }
 
+  private async findAuthor(authorId: number) {
+    return this.authorsService.getAuthorById(authorId);
+  }
+
   async findAll(): Promise<Book[]> {
-    return this.bookEntityRepository.findAll();
+    return this.bookEntityRepository.findAll({ populate: ['libraries'] });
   }
 
   async findOne(id: number): Promise<Book> {
-    const bookFound = await this.bookEntityRepository.findOne({ id });
+    const bookFound = await this.bookEntityRepository.findOne({ id }, { populate: ['libraries'] });
     if (!bookFound) throw new BookNotFoundException();
     return bookFound;
   }
 
   async update(id: number, updateBookDto: UpdateBook): Promise<boolean> {
-    const bookUpdateCount = await this.bookEntityRepository.nativeUpdate(
-      { id },
-      updateBookDto,
-    );
+    const { authorId, ...bookDto } = updateBookDto;
+    const book: Partial<Book> = { ...bookDto };
+    if (authorId) book.author = await this.findAuthor(authorId);
+    const bookUpdateCount = await this.bookEntityRepository.nativeUpdate({ id }, book);
     if (bookUpdateCount === 0) throw new BookNotFoundException();
     return true;
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number): Promise<{ message: string }> {
     const book = await this.findOne(id);
     await this.em.removeAndFlush(book);
+    return { message: 'Book deleted successfully' };
+  }
+
+  async uploadCover(id: number, filename: string): Promise<Book> {
+    const book = await this.findOne(id);
+    book.coverImage = filename;
+    await this.em.persistAndFlush(book);
+    return book;
+  }
+
+  async uploadBackCover(id: number, filename: string): Promise<Book> {
+    const book = await this.findOne(id);
+    book.backCoverImage = filename;
+    await this.em.persistAndFlush(book);
+    return book;
   }
 }
