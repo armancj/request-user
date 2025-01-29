@@ -26,14 +26,14 @@ export class Book implements BookModel {
   @ManyToOne(() => Author)
   author: Author;
 
-  @ManyToMany(() => Library,null, { nullable: true })
+  @ManyToMany(() => Library,null , { nullable: true })
   @Exclude()
   libraries: Collection<Library> = new Collection<Library>(this);
 
   @ManyToMany(() => Editorial, null, { nullable: true })
   @Exclude()
-  editorials: Collection<Editorial> = new Collection<Editorial>(this);
-  
+  editorials: Editorial;
+
   @Property()
   year: number;
 
