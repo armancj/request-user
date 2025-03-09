@@ -1,14 +1,24 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { AuthorsService } from './authors.service';
-import { Author } from './author.entity';
+import { Author } from './entity/author.entity';
+import { CreateAuthorDto } from './dto/create-author.dto';
+import { UpdateAuthorDto } from './dto/update-author.dto';
 
 @Controller('authors')
 export class AuthorsController {
   constructor(private readonly authorsService: AuthorsService) {}
 
   @Post()
-  async create(@Body() body: { name: string; bio: string }): Promise<Author> {
-    return await this.authorsService.createAuthor(body.name, body.bio);
+  async create(@Body() createAuthorDto: CreateAuthorDto): Promise<Author> {
+    return await this.authorsService.createAuthor(createAuthorDto);
   }
 
   @Get()
@@ -24,13 +34,13 @@ export class AuthorsController {
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() body: { name: string; bio: string },
-  ): Promise<Author | null> {
-    return await this.authorsService.updateAuthor(id, body.name, body.bio);
+    @Body() updateAuthorDto: UpdateAuthorDto,
+  ): Promise<{ message: string }> {
+    return await this.authorsService.updateAuthor(id, updateAuthorDto);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<boolean> {
+  async delete(@Param('id') id: number): Promise<{ message: string }> {
     return await this.authorsService.deleteAuthor(id);
   }
 }

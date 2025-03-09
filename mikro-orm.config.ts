@@ -3,7 +3,7 @@ import { SqliteDriver } from '@mikro-orm/sqlite';
 
 const config: MikroOrmModuleOptions = {
   entities: ['./src/feature/**/*.entity.ts'],
-  dbName: 'library',
+  dbName: 'library.sqlite3',
   driver: SqliteDriver,
   debug: true,
 };
